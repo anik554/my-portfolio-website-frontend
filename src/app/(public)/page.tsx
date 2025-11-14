@@ -2,6 +2,7 @@
 // import BlogCard from "@/components/modules/Blogs/BlogCard";
 import AboutMe from "@/components/modules/Home/AboutMe";
 import Hero from "@/components/modules/Home/Hero";
+import Resume from "@/components/modules/Home/Resume";
 
 export default async function HomePage() {
   // const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/post`, {
@@ -15,6 +16,7 @@ export default async function HomePage() {
     <div>
       <Hero />
       <AboutMe />
+      <Resume />
       <div className="grid grid-cols-3 gap-4 max-w-6xl mx-auto my-5">
         {/* {blogs.slice(0, 3).map((blog: any) => (
           <BlogCard key={blog?.id} post={blog} />
