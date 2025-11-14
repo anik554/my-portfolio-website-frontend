@@ -59,7 +59,7 @@ const AboutMe = async () => {
 };
 
 const InfoItem = ({ icon, label, value }:{icon:any,label:string,value:string}) => (
-  <div className="flex items-start gap-3 p-4 rounded-xl border ">
+  <div className="flex items-start gap-3 p-4 rounded-xl border">
     <div className="text-red-400">{icon}</div>
     <div>
       <p className="text-sm ">{label}</p>
