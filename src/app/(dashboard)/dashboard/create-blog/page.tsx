@@ -1,3 +1,4 @@
+import { CreateBlogDialog } from "@/components/modules/Blogs/CreateBlogDialog";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -24,7 +25,7 @@ const CreateBlog = async() => {
     <div className="w-9/12 mx-auto py-20">
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-2xl font-bold">All Blogs</h2>
-        <Button>Create Blog</Button>
+        <CreateBlogDialog />
       </div>
       <Table>
         <TableCaption>A list of your recent invoices.</TableCaption>

@@ -11,7 +11,7 @@ const AboutMe = async () => {
         <div className="flex justify-center md:justify-start">
           <div className="relative">
             <Image
-              src="/anik_mou.jpg"
+              src="/person2.jpg"
               alt="Developer"
               width={380}
               height={380}
