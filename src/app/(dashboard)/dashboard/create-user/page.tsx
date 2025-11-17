@@ -32,43 +32,41 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import { getAllBlogs } from "@/api/blogs";
-import { IBlogs } from "@/types";
-import { CreateBlogDialog } from "@/components/modules/Blogs/CreateBlogDialog";
 import { DeleteModal } from "@/components/shared/DeleteModal";
+import { getAllUsers } from "@/api/users/api.user";
+import { IUser } from "@/types/users.type";
+import { UserCreateModal } from "@/components/modules/Users/UserCreateModal";
 
 // ------------------ MAIN PAGE ------------------
-export default function CreateBlogPage() {
-  const [blogs, setBlogs] = React.useState<IBlogs[]>([]);
+export default function CreateUserPage() {
+  const [users, setUsers] = React.useState<IUser[]>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] =React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedId, setSelectedId] = React.useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [dialogOpenDelete, setDialogOpenDelete] = React.useState(false);
-  const [currentBlog, setCurrentBlog] = React.useState<IBlogs | null>(null);
-  const [deleteBlogData, setDeleteBlogData] = React.useState<IBlogs | null>(null);
+  const [currentUser, setCurrentuser] = React.useState<IUser | null>(null);
+  const [deleteBlogData, setDeleteBlogData] = React.useState<IUser | null>(null);
 
   React.useEffect(() => {
     const loadBlogs = async () => {
-      const data = await getAllBlogs();
-      setBlogs(data);
+      const data = await getAllUsers();
+      setUsers(data);
     };
     loadBlogs();
   }, []);
 
   const refreshBlogs = async () => {
-    const data = await getAllBlogs();
-    setBlogs(data);
+    const data = await getAllUsers();
+    setUsers(data);
   };
 
   // ------------------ TABLE COLUMNS ------------------
-  const columns: ColumnDef<IBlogs>[] = [
+  const columns: ColumnDef<IUser>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -91,40 +89,43 @@ export default function CreateBlogPage() {
     },
     {
       accessorKey: "id",
-      header: "Blog Id",
+      header: "User Id",
       cell: ({ row }) => <div>{row.getValue("id")}</div>,
     },
     {
-      accessorKey: "title",
+      accessorKey: "name",
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Title
+          User Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("title")}</div>
+        <div className="capitalize">{row.getValue("name")}</div>
       ),
     },
     {
-      accessorKey: "views",
-      header: () => <div>Views</div>,
-      cell: ({ row }) => <div>{row.getValue("views")}</div>,
+      accessorKey: "email",
+      header: () => <div>Email</div>,
+      cell: ({ row }) => <div>{row.getValue("email")}</div>,
     },
     {
-      accessorKey: "tags",
-      header: () => <div>Tags</div>,
-      cell: ({ row }) => {
-        const tags = row.getValue("tags") as string[];
-        return (
-          <div className="capitalize">
-            {Array.isArray(tags) ? tags.join(", ") : ""}
-          </div>
-        );
-      },
+      accessorKey: "role",
+      header: () => <div>Role</div>,
+      cell: ({ row }) => <div>{row.getValue("role")}</div>,
+    },
+    {
+      accessorKey: "phone",
+      header: () => <div>Phone</div>,
+      cell: ({ row }) => <div>{row.getValue("phone")}</div>,
+    },
+    {
+      accessorKey: "status",
+      header: () => <div>Status</div>,
+      cell: ({ row }) => <div>{row.getValue("status")}</div>,
     },
     {
       accessorKey: "createdAt",
@@ -140,7 +141,7 @@ export default function CreateBlogPage() {
       cell: ({ row }) => {
         const rowData = row.original;
         const id = row.original.id;
-        const isSelectedEdit = currentBlog === rowData;
+        const isSelectedEdit = currentUser === rowData;
         const isSelectedDelete = selectedId === id;
         return (
           <div className="text-right capitalize">
@@ -148,7 +149,7 @@ export default function CreateBlogPage() {
               className="mr-2"
               variant="outline"
               onClick={() => {
-                setCurrentBlog(rowData);
+                setCurrentuser(rowData);
                 setDialogOpen(true);
               }}
               style={{
@@ -180,7 +181,7 @@ export default function CreateBlogPage() {
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data: blogs,
+    data: users,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -201,12 +202,12 @@ export default function CreateBlogPage() {
   return (
     <div className="w-9/12 mx-auto py-12">
       <div>
-        <h2 className="text-2xl font-bold">Manage Blogs</h2>
+        <h2 className="text-2xl font-bold">Manage Users</h2>
       </div>
       {/* Search + Filter */}
       <div className="flex items-center justify-between py-4">
         <Input
-          placeholder="Filter by title..."
+          placeholder="Filter by email..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(e) =>
             table.getColumn("title")?.setFilterValue(e.target.value)
@@ -218,12 +219,12 @@ export default function CreateBlogPage() {
           <Button
             variant={"outline"}
             onClick={() => {
-              setCurrentBlog(null);
+              setCurrentuser(null);
               setDialogOpen(true);
             }}
             className="mr-2"
           >
-            Add Blog
+            Add User
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -329,26 +330,27 @@ export default function CreateBlogPage() {
           </Button>
         </div>
       </div>
-      <CreateBlogDialog
-        blog={currentBlog}
+      <UserCreateModal
+        user={currentUser}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSuccess={async () => {
           setDialogOpen(false);
-          setCurrentBlog(null);
+          setCurrentuser(null);
           await refreshBlogs();
         }}
       />
       <DeleteModal  
-        blog={deleteBlogData}
+        blog={deleteBlogData as IUser}
         open={dialogOpenDelete}
         onOpenChange={setDialogOpenDelete}
-        key={"blog"}
+        type="user"
         onSuccess={async () => {
           setDialogOpen(false);
-          setCurrentBlog(null);
+          setCurrentuser(null);
           await refreshBlogs();
         }}/>
+        
     </div>
   );
 }

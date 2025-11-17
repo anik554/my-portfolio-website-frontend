@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect} from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,9 +10,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { X } from "lucide-react";
+import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
   Form,
@@ -22,10 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { X } from "lucide-react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { IBlogs } from "@/types";
 
 interface IFormInput {
   title: string;
@@ -34,9 +33,16 @@ interface IFormInput {
   content: string;
 }
 
-export function CreateBlogDialog() {
-  const [open, setOpen] = useState(false);
-  const router = useRouter(); 
+interface Props {
+  blog: IBlogs | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => Promise<void>;
+}
+
+export function CreateBlogDialog({ blog, open, onOpenChange, onSuccess }: Props) {
+  const isEdit = !!blog;
+
   const form = useForm<IFormInput>({
     defaultValues: {
       title: "",
@@ -46,60 +52,63 @@ export function CreateBlogDialog() {
     },
   });
 
+  // Populate form when editing
+  useEffect(() => {
+    if (open && blog) {
+      form.reset({
+        title: blog.title ?? "",
+        thumbnail: blog.thumbnail ?? "",
+        tags: blog.tags ?? [],
+        content: blog.content ?? "",
+      });
+    } else if (open && !blog) {
+      form.reset({
+        title: "",
+        thumbnail: "",
+        tags: [],
+        content: "",
+      });
+    }
+  }, [open, blog, form]);
+
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     try {
       const payload = {
         ...data,
-        authorId: 1,
+        authorId: 2, // adjust if needed
       };
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_API}/blog`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const url = isEdit
+        ? `${process.env.NEXT_PUBLIC_BASE_API}/blog/${blog!.id}`
+        : `${process.env.NEXT_PUBLIC_BASE_API}/blog`;
 
-      if (!res.ok) {
-        toast.error("Failed to create blog");
-        return;
-      }
+      const method = isEdit ? "PATCH" : "POST";
 
-      toast.success("New Blog Created Successfully");
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-      // Close dialog + reset form
-      setOpen(false);
-      form.reset();
-      router.refresh();
-    } catch (error) {
-      console.error(error);
+      if (!res.ok) throw new Error("Request failed");
+
+      toast.success(isEdit ? "Blog updated!" : "Blog created!");
+      await onSuccess();
+    } catch (err) {
+      console.error(err);
       toast.error("Something went wrong");
     }
   };
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(isOpen) => {
-        setOpen(isOpen);
-        if (!isOpen) form.reset();
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button variant="default">Create Blog</Button>
-      </DialogTrigger>
-
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <DialogHeader>
-              <DialogTitle>Create a Blog</DialogTitle>
+              <DialogTitle>{isEdit ? "Edit Blog" : "Create a Blog"}</DialogTitle>
               <DialogDescription>
-                Fill up the form to publish a blog post.
+                {isEdit ? "Update the blog details." : "Fill up the form to publish a blog post."}
               </DialogDescription>
             </DialogHeader>
 
@@ -124,13 +133,9 @@ export function CreateBlogDialog() {
               name="thumbnail"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Thumbnail</FormLabel>
+                  <FormLabel>Thumbnail URL</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="https://imageurl.com"
-                      type="url"
-                      {...field}
-                    />
+                    <Input placeholder="https://imageurl.com" type="url" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -146,19 +151,16 @@ export function CreateBlogDialog() {
                   <FormLabel>Tags</FormLabel>
                   <FormControl>
                     <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-10 items-center">
-                      {field.value.map((tag, index) => (
+                      {field.value.map((tag, idx) => (
                         <span
-                          key={index}
+                          key={idx}
                           className="inline-flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm"
                         >
                           {tag}
                           <button
                             type="button"
                             onClick={() => {
-                              const newTags = field.value.filter(
-                                (_, i) => i !== index
-                              );
-                              field.onChange(newTags);
+                              field.onChange(field.value.filter((_, i) => i !== idx));
                             }}
                             className="ml-1 hover:bg-primary/80 rounded-full p-0.5"
                           >
@@ -169,17 +171,10 @@ export function CreateBlogDialog() {
 
                       <input
                         type="text"
-                        placeholder={
-                          field.value.length === 0
-                            ? "Type tag and press Enter"
-                            : ""
-                        }
+                        placeholder={field.value.length === 0 ? "Type tag and press Enter" : ""}
                         className="flex-1 min-w-[120px] outline-none text-sm"
                         onKeyDown={(e) => {
-                          if (
-                            e.key === "Enter" &&
-                            e.currentTarget.value.trim()
-                          ) {
+                          if (e.key === "Enter" && e.currentTarget.value.trim()) {
                             const newTag = e.currentTarget.value.trim();
                             if (!field.value.includes(newTag)) {
                               field.onChange([...field.value, newTag]);
@@ -187,15 +182,8 @@ export function CreateBlogDialog() {
                             e.currentTarget.value = "";
                             e.preventDefault();
                           }
-
-                          if (
-                            e.key === "Backspace" &&
-                            !e.currentTarget.value &&
-                            field.value.length > 0
-                          ) {
-                            field.onChange(
-                              field.value.slice(0, -1)
-                            );
+                          if (e.key === "Backspace" && !e.currentTarget.value && field.value.length) {
+                            field.onChange(field.value.slice(0, -1));
                           }
                         }}
                       />
@@ -214,11 +202,7 @@ export function CreateBlogDialog() {
                 <FormItem>
                   <FormLabel>Content</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Describe your blog..."
-                      rows={4}
-                      {...field}
-                    />
+                    <Textarea placeholder="Describe your blog..." rows={5} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -227,9 +211,11 @@ export function CreateBlogDialog() {
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button type="button" variant="outline">
+                  Cancel
+                </Button>
               </DialogClose>
-              <Button type="submit">Submit</Button>
+              <Button type="submit">{isEdit ? "Update" : "Create"}</Button>
             </DialogFooter>
           </form>
         </Form>

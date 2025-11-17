@@ -32,43 +32,42 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import { getAllBlogs } from "@/api/blogs";
-import { IBlogs } from "@/types";
-import { CreateBlogDialog } from "@/components/modules/Blogs/CreateBlogDialog";
 import { DeleteModal } from "@/components/shared/DeleteModal";
+import { UserCreateModal } from "@/components/modules/Users/UserCreateModal";
+import { getAllprojects } from "@/api/projects/api.project";
+import { IProjects } from "@/types";
+import { ProjectCreateModal } from "@/components/modules/Projects/ProjectCreateModal";
 
 // ------------------ MAIN PAGE ------------------
-export default function CreateBlogPage() {
-  const [blogs, setBlogs] = React.useState<IBlogs[]>([]);
+export default function CreatePojectPage() {
+  const [projects, setProjects] = React.useState<IProjects[]>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] =React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedId, setSelectedId] = React.useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [dialogOpenDelete, setDialogOpenDelete] = React.useState(false);
-  const [currentBlog, setCurrentBlog] = React.useState<IBlogs | null>(null);
-  const [deleteBlogData, setDeleteBlogData] = React.useState<IBlogs | null>(null);
+  const [currentProject, setCurrentproject] = React.useState<IProjects | null>(null);
+  const [deleteBlogData, setDeleteBlogData] = React.useState<IProjects | null>(null);
 
   React.useEffect(() => {
-    const loadBlogs = async () => {
-      const data = await getAllBlogs();
-      setBlogs(data);
+    const loadProjects = async () => {
+      const data = await getAllprojects();
+      setProjects(data);
     };
-    loadBlogs();
+    loadProjects();
   }, []);
 
-  const refreshBlogs = async () => {
-    const data = await getAllBlogs();
-    setBlogs(data);
+  const refreshProjects = async () => {
+    const data = await getAllprojects();
+    setProjects(data);
   };
 
   // ------------------ TABLE COLUMNS ------------------
-  const columns: ColumnDef<IBlogs>[] = [
+  const columns: ColumnDef<IUser>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -91,7 +90,7 @@ export default function CreateBlogPage() {
     },
     {
       accessorKey: "id",
-      header: "Blog Id",
+      header: "User Id",
       cell: ({ row }) => <div>{row.getValue("id")}</div>,
     },
     {
@@ -101,7 +100,7 @@ export default function CreateBlogPage() {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Title
+         Title
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -110,15 +109,37 @@ export default function CreateBlogPage() {
       ),
     },
     {
-      accessorKey: "views",
-      header: () => <div>Views</div>,
-      cell: ({ row }) => <div>{row.getValue("views")}</div>,
+      accessorKey: "thumbnail",
+      header: () => <div>Thumbnail</div>,
+      cell: ({ row }) => <div>{row.getValue("thumbnail")}</div>,
     },
     {
-      accessorKey: "tags",
-      header: () => <div>Tags</div>,
+      accessorKey: "repoLink",
+      header: () => <div>Repo Link</div>,
+      cell: ({ row }) => <div>{row.getValue("repoLink")}</div>,
+    },
+    {
+      accessorKey: "liveLink",
+      header: () => <div>Live Link</div>,
+      cell: ({ row }) => <div>{row.getValue("liveLink")}</div>,
+    },
+    {
+      accessorKey: "features",
+      header: () => <div>Features</div>,
       cell: ({ row }) => {
-        const tags = row.getValue("tags") as string[];
+        const tags = row.getValue("features") as string[];
+        return (
+          <div className="capitalize">
+            {Array.isArray(tags) ? tags.join(", ") : ""}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "technologies",
+      header: () => <div>Technologies</div>,
+      cell: ({ row }) => {
+        const tags = row.getValue("technologies") as string[];
         return (
           <div className="capitalize">
             {Array.isArray(tags) ? tags.join(", ") : ""}
@@ -140,7 +161,8 @@ export default function CreateBlogPage() {
       cell: ({ row }) => {
         const rowData = row.original;
         const id = row.original.id;
-        const isSelectedEdit = currentBlog === rowData;
+        console.log(rowData)
+        const isSelectedEdit = currentProject === rowData;
         const isSelectedDelete = selectedId === id;
         return (
           <div className="text-right capitalize">
@@ -148,7 +170,7 @@ export default function CreateBlogPage() {
               className="mr-2"
               variant="outline"
               onClick={() => {
-                setCurrentBlog(rowData);
+                setCurrentproject(rowData);
                 setDialogOpen(true);
               }}
               style={{
@@ -180,7 +202,7 @@ export default function CreateBlogPage() {
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data: blogs,
+    data: projects,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -201,12 +223,12 @@ export default function CreateBlogPage() {
   return (
     <div className="w-9/12 mx-auto py-12">
       <div>
-        <h2 className="text-2xl font-bold">Manage Blogs</h2>
+        <h2 className="text-2xl font-bold">Manage Projects</h2>
       </div>
       {/* Search + Filter */}
       <div className="flex items-center justify-between py-4">
         <Input
-          placeholder="Filter by title..."
+          placeholder="Filter by email..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(e) =>
             table.getColumn("title")?.setFilterValue(e.target.value)
@@ -218,12 +240,12 @@ export default function CreateBlogPage() {
           <Button
             variant={"outline"}
             onClick={() => {
-              setCurrentBlog(null);
+              setCurrentproject(null);
               setDialogOpen(true);
             }}
             className="mr-2"
           >
-            Add Blog
+            Add Project
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -329,26 +351,27 @@ export default function CreateBlogPage() {
           </Button>
         </div>
       </div>
-      <CreateBlogDialog
-        blog={currentBlog}
+      <ProjectCreateModal
+        project={currentProject}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSuccess={async () => {
           setDialogOpen(false);
-          setCurrentBlog(null);
-          await refreshBlogs();
+          setCurrentproject(null);
+          await refreshProjects();
         }}
       />
       <DeleteModal  
-        blog={deleteBlogData}
+        blog={deleteBlogData as IProjects}
         open={dialogOpenDelete}
         onOpenChange={setDialogOpenDelete}
-        key={"blog"}
+        type="project"
         onSuccess={async () => {
           setDialogOpen(false);
-          setCurrentBlog(null);
-          await refreshBlogs();
+          setCurrentproject(null);
+          await refreshProjects();
         }}/>
+        
     </div>
   );
 }
