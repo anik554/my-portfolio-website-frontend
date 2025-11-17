@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/table";
 import { DeleteModal } from "@/components/shared/DeleteModal";
 import { UserCreateModal } from "@/components/modules/Users/UserCreateModal";
-import { getAllprojects } from "@/api/projects/api.project";
+import { getAllprojects } from "@/apis/projects/api.project";
 import { IProjects } from "@/types";
 import { ProjectCreateModal } from "@/components/modules/Projects/ProjectCreateModal";
 
@@ -278,7 +278,7 @@ export default function CreatePojectPage() {
       {/* TABLE */}
       <div className="overflow-hidden rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted sticky top-0 z-10">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (

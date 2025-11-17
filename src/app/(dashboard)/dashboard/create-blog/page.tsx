@@ -33,7 +33,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { getAllBlogs } from "@/api/blogs";
+import { getAllBlogs } from "@/apis/blogs";
 import { IBlogs } from "@/types";
 import { CreateBlogDialog } from "@/components/modules/Blogs/CreateBlogDialog";
 import { DeleteModal } from "@/components/shared/DeleteModal";
@@ -256,7 +256,7 @@ export default function CreateBlogPage() {
       {/* TABLE */}
       <div className="overflow-hidden rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted sticky top-0 z-10">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (

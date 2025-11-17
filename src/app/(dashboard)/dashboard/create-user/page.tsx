@@ -33,7 +33,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DeleteModal } from "@/components/shared/DeleteModal";
-import { getAllUsers } from "@/api/users/api.user";
+import { getAllUsers } from "@/apis/users/api.user";
 import { IUser } from "@/types/users.type";
 import { UserCreateModal } from "@/components/modules/Users/UserCreateModal";
 
@@ -257,7 +257,7 @@ export default function CreateUserPage() {
       {/* TABLE */}
       <div className="overflow-hidden rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted sticky top-0 z-10">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (

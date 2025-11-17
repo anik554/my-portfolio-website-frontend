@@ -134,6 +134,7 @@ export function ProjectCreateModal({
 
             {/* Title */}
             <FormField
+            
               control={form.control}
               name="title"
               render={({ field }) => (
@@ -143,6 +144,7 @@ export function ProjectCreateModal({
                     <Input
                       placeholder="Hospital Automation System"
                       {...field}
+                      disabled={Auto}
                     />
                   </FormControl>
                   <FormMessage />

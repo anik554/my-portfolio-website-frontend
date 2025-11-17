@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Home, PlusCircle, LogOut } from "lucide-react";
-// import { signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export default function Sidebar() {
-//   const session = useSession();
+  const session = useSession();
 
   return (
     <aside className="flex h-screen w-64 flex-col border-r bg-black text-white">
@@ -44,7 +44,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom action */}
-      {/* <div className="p-4 border-t border-gray-500">
+      <div className="p-4 border-t border-gray-500">
         {session.status === "authenticated" && (
           <Button
             variant="destructive"
@@ -55,7 +55,7 @@ export default function Sidebar() {
             Logout
           </Button>
         )}
-      </div> */}
+      </div>
     </aside>
   );
 }
