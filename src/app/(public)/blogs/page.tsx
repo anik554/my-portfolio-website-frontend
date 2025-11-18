@@ -1,4 +1,5 @@
 import BlogCard from "@/components/modules/Blogs/BlogCard";
+import { IBlogs } from "@/types";
 import { Metadata } from "next";
 
 export const metadata: Metadata={
@@ -15,7 +16,7 @@ const AllBlogsPage = async () => {
     <div className="py-30 px-4 max-w-7xl mx-auto">
       <h2 className="text-center text-4xl">All Blogs</h2>
       <div className="grid grid-cols-3 gap-4 max-w-6xl mx-auto my-5">
-        {blogs?.map((blog: any) => (
+        {blogs?.map((blog: IBlogs) => (
           <BlogCard key={blog?.id} post={blog} />
         ))}
       </div>

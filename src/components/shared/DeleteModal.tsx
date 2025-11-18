@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { TriangleAlertIcon } from 'lucide-react'
 import {
   Dialog,
   DialogClose,
@@ -68,16 +69,20 @@ export function DeleteModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
+        <div className='bg-destructive/10 mx-auto mb-2 flex size-12 items-center justify-center rounded-full'>
+            <TriangleAlertIcon className='text-destructive size-6' />
+          </div>
         <DialogHeader>
-          <DialogTitle>Confirm Delete</DialogTitle>
-          <DialogDescription>
-            Are you sure you want to delete{" "}
+          <DialogTitle>Are you absolutely sure you want to delete?</DialogTitle>
+          <div className="text-center">
             <span className="font-bold">
               {type === "user"
                 ? (blog as IUser)?.name
                 : (blog as IBlogs | IProjects)?.title}
             </span>
-            ?
+          </div>
+          <DialogDescription>
+            This action cannot be undone. This will permanently delete your account and remove your data from our servers.
           </DialogDescription>
         </DialogHeader>
 

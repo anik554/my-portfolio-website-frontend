@@ -33,7 +33,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DeleteModal } from "@/components/shared/DeleteModal";
-import { UserCreateModal } from "@/components/modules/Users/UserCreateModal";
 import { getAllprojects } from "@/apis/projects/api.project";
 import { IProjects } from "@/types";
 import { ProjectCreateModal } from "@/components/modules/Projects/ProjectCreateModal";
@@ -67,7 +66,7 @@ export default function CreatePojectPage() {
   };
 
   // ------------------ TABLE COLUMNS ------------------
-  const columns: ColumnDef<IUser>[] = [
+  const columns: ColumnDef<IProjects>[] = [
     {
       id: "select",
       header: ({ table }) => (

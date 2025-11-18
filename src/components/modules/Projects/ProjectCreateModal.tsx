@@ -144,7 +144,6 @@ export function ProjectCreateModal({
                     <Input
                       placeholder="Hospital Automation System"
                       {...field}
-                      disabled={Auto}
                     />
                   </FormControl>
                   <FormMessage />
