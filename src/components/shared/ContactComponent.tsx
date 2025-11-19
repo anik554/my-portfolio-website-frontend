@@ -10,11 +10,7 @@ export default function ContactComponent() {
     phone: "",
     message: "",
   });
-
-  console.log("form",form)
-
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -24,17 +20,14 @@ export default function ContactComponent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus("");
-
+    setLoading(true)
     const res = await contact(form)
 
     if (res) {
-      setStatus("Message sent successfully!");
       toast.success(res.message)
       setForm({ email: "", phone: "", message: "" });
-      setLoading(true);
+      setLoading(false);
     } else {
-      setStatus("Something went wrong. Try again!");
       toast.error(res.message)
       setLoading(false);
     }
@@ -54,7 +47,6 @@ export default function ContactComponent() {
       </div>
       <div className="w-full bg-white dark:bg-neutral-900 border rounded-xl p-6 shadow-sm">
         <h2 className="text-2xl font-bold mb-4">Contact Me</h2>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-sm font-medium">Email</label>
@@ -67,7 +59,6 @@ export default function ContactComponent() {
               className="w-full p-3 rounded-md border bg-transparent"
             />
           </div>
-
           <div>
             <label className="text-sm font-medium">Phone</label>
             <input
@@ -79,7 +70,6 @@ export default function ContactComponent() {
               className="w-full p-3 rounded-md border bg-transparent"
             />
           </div>
-
           <div>
             <label className="text-sm font-medium">Message</label>
             <textarea
@@ -91,7 +81,6 @@ export default function ContactComponent() {
               className="w-full p-3 rounded-md border bg-transparent"
             ></textarea>
           </div>
-
           <button
             type="submit"
             disabled={loading}
@@ -99,8 +88,6 @@ export default function ContactComponent() {
           >
             {loading ? "Sending..." : "Send Message"}
           </button>
-
-          {status && <p className="text-center text-sm mt-2">{status}</p>}
         </form>
       </div>
     </div>

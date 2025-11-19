@@ -134,7 +134,6 @@ export function ProjectCreateModal({
 
             {/* Title */}
             <FormField
-            
               control={form.control}
               name="title"
               render={({ field }) => (

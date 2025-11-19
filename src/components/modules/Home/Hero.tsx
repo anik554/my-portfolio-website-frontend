@@ -50,7 +50,7 @@ export default async function Hero() {
         {/* RIGHT SIDE IMAGE */}
         <div className="flex justify-center md:justify-end">
           <Image
-            src="/person2.jpg"
+            src="/Anik_Image.png"
             alt="Developer"
             width={350}
             height={350}
