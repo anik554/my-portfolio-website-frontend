@@ -28,10 +28,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useState } from "react";
-import { login } from "@/actions/login";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
+import { login } from "@/actions/authActions";
 
 interface UserTypes {
   email: string;
@@ -51,22 +51,23 @@ export function LoginForm({
   });
   const [loading, setLoading] = useState(false);
 
-  const onsubmit: SubmitHandler<UserTypes> = async (data) => {
-    try {
-      setLoading(true);
-      const res = await login(data);
-      if (res) {
-        toast.success(res.message);
-        route.push("/dashboard");
-      } else {
-        toast.error(res.message);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+const onsubmit: SubmitHandler<UserTypes> = async (data) => {
+  try {
+    setLoading(true);
+    const res = await login(data);
+
+    if (res.success) {
+      toast.success("Logged in successfully");
+      route.push("/dashboard"); // only redirect ONCE (client-side)
+    } else {
+      toast.error(res.message || "Login failed");
     }
-  };
+  } catch (error) {
+    toast.error("Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

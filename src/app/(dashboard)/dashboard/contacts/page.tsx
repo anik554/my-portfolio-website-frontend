@@ -286,7 +286,7 @@ export default function ContactPage() {
         blog={deleteBlogData}
         open={dialogOpenDelete}
         onOpenChange={setDialogOpenDelete}
-        key={"blog"}
+        type={"blog"}
         onSuccess={async () => {
           setDialogOpen(false);
           setCurrentBlog(null);

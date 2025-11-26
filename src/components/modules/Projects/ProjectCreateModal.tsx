@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect } from "react";
@@ -25,6 +26,7 @@ import {
 import { IProjects } from "@/types";
 import { X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { getCurrentUser } from "@/app/utils/getCurrentUser";
 
 interface IFormInput {
   title: string;
@@ -88,10 +90,11 @@ export function ProjectCreateModal({
   }, [open, form, project]);
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+    const user : any = await getCurrentUser();
     try {
       const payload = {
         ...data,
-        authorId: 2, // adjust if needed
+        authorId: user?.id, // adjust if needed
       };
 
       const url = isEdit

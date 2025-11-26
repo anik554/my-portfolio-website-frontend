@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect } from "react";
@@ -23,6 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { IUser } from "@/types";
+import { getCurrentUser } from "@/app/utils/getCurrentUser";
 
 interface IFormInput {
   name: string;
@@ -74,10 +76,11 @@ export function UserCreateModal({
   }, [open, form, user]);
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+    const user : any = await getCurrentUser();
     try {
       const payload = {
         ...data,
-        authorId: 2, // adjust if needed
+        authorId: user?.id, // adjust if needed
       };
 
       const url = isEdit

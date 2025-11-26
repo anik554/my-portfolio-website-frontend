@@ -1,33 +1,40 @@
 import BlogDetailsCard from "@/components/modules/Blogs/BlogDetailsCard";
 
-export const generateStaticParams =async()=>{
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/blog`)
-  const {data:blogs}= await res.json()
+// Force runtime rendering (no build-time fetch)
+export const dynamic = "force-dynamic";
 
-  return blogs?.map((blog:{id:number})=>({
-    blogId: String(blog.id)
-  }))
-}
+// ------------------
+// Metadata
+// ------------------
+export async function generateMetadata({
+  params,
+}: {
+  params: { blogId: string };
+}) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_API}/blog/${params.blogId}`,
+    { cache: "no-store" } // runtime fetch
+  );
 
-export const generateMetadata =async({params}:{params:Promise<{blogId:string}>})=>{
-  const {blogId} = await params;
-  const res = fetch(`${process.env.NEXT_PUBLIC_BASE_API}/blog/${blogId}`)
-  const blog = await (await res).json()
+  const { data: blog } = await res.json();
 
   return {
     title: blog?.title,
-    description: blog?.content
-  }
+    description: blog?.content,
+  };
 }
 
-const BlogDetailsPage = async ({
-  params,
-}: {
-  params: Promise<{ blogId: string }>;
-}) => {
-  const {blogId} = await params;
-  const res = fetch(`${process.env.NEXT_PUBLIC_BASE_API}/blog/${blogId}`)
-  const blog = await (await res).json()
+// ------------------
+// Page Component
+// ------------------
+const BlogDetailsPage = async ({ params }: { params: { blogId: string } }) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_API}/blog/${params.blogId}`,
+    { cache: "no-store" }
+  );
+
+  const { data: blog } = await res.json();
+
   return (
     <div className="py-30 px-4 max-w-7xl mx-auto">
       <BlogDetailsCard blog={blog} />

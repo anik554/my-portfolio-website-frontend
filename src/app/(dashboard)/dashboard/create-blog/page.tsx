@@ -343,7 +343,7 @@ export default function CreateBlogPage() {
         blog={deleteBlogData}
         open={dialogOpenDelete}
         onOpenChange={setDialogOpenDelete}
-        key={"blog"}
+        type={"blog"}
         onSuccess={async () => {
           setDialogOpen(false);
           setCurrentBlog(null);
